@@ -1,0 +1,13 @@
+#!/bin/sh
+set -e
+
+URL="https://www.eventbriteapi.com/v3/users/me/events/?token=$(cat data/api.key)"
+[ -f data/events.json ] || curl "$URL" -o data/events.json
+
+jq -r ".events[] | select(.status != \"draft\") | {
+	id, \
+	name: .name.text, \
+	start: .start.local, \
+	end: .end.local, \
+	status, \
+}" data/events.json

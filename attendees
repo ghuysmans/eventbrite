@@ -1,0 +1,12 @@
+#!/bin/sh
+set -e
+
+URL="https://www.eventbriteapi.com/v3/events/$1/attendees/?token=$(cat data/api.key)"
+[ -f data/$1.json ] || curl "$URL" -o data/$1.json
+
+jq -r ".attendees[] | { \
+	first_name: .profile.first_name, \
+	last_name: .profile.last_name, \
+	email: .profile.email, \
+	workshop: (.answers[] | select(.question==\"\\u00c0 quel atelier souhaites-tu participer ?\")).answer \
+}" data/$1.json
